@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -23,12 +24,35 @@ public class ContaResourse {
 
     @PostMapping
     public ResponseEntity<Conta> save(@RequestBody Conta conta) {
+        if (conta.qtdParcela.signum() > 0) {
+            atribuiValorParcela(conta);
+        }
+
         contaRepository.save(conta);
         return new ResponseEntity<>(conta, HttpStatus.OK);
     }
 
+    @PostMapping(path = "/cadastrarContas")
+    public ResponseEntity<List<Conta>> saveList(@RequestBody ArrayList<Conta> contas) {
+        for (int i = 0; i < contas.size(); i++) {
+            if (contas.get(i).qtdParcela != null && contas.get(i).qtdParcela.intValue() > 0) {
+                atribuiValorParcela(contas.get(i));
+            }
+
+            contaRepository.save(contas.get(i));
+        }
+        return new ResponseEntity<List<Conta>>((List<Conta>) contas, HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<List<Conta>> getAll() {
+        List<Conta> contas = new ArrayList<>();
+        contas = contaRepository.findAll();
+        return new ResponseEntity<>(contas, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/relatorioMensal")
+    public ResponseEntity<List<Conta>> geraRelatorio() {
         List<Conta> contas = new ArrayList<>();
         contas = contaRepository.findAll();
         return new ResponseEntity<>(contas, HttpStatus.OK);
@@ -60,9 +84,15 @@ public class ContaResourse {
         return contaRepository.findById(id)
                 .map(conta -> {
                     conta.setDescricao(newConta.getDescricao());
-                    conta.setValor(newConta.getValor());
+                    conta.setValor(new BigDecimal(String.valueOf((newConta.getValor()))));
+                    conta.setTipoConta(newConta.getTipoConta());
+                    conta.setQtdParcela(newConta.getQtdParcela());
                     Conta contaUpdate = contaRepository.save(conta);
                     return ResponseEntity.ok().body(contaUpdate);
                 }).orElse(ResponseEntity.notFound().build());
+    }
+
+    public void atribuiValorParcela(Conta conta) {
+        conta.setValorParcela((conta.getValor().divide(conta.getQtdParcela())));
     }
 }

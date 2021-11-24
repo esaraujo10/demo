@@ -1,9 +1,9 @@
 package br.com.accenture.report.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
@@ -15,19 +15,18 @@ public class Conta {
     @Column(name ="descricao")
     public String descricao;
 
-
     @Column(name ="valor", precision=10, scale=2)
-    public Long valor;
+    public BigDecimal valor;
 
     @Column(name ="tipoConta")
     public String tipoConta;
 
     @Column(name ="qtdParcela")
-    public Long qtdParcela;
+    public BigDecimal qtdParcela;
 
     @Column(name ="dataInicio")
     @DateTimeFormat(pattern="dd/MM/yyyy")
-    public Date dataInicio;
+    public Timestamp dataInicio;
 
     @Column(name ="dataFim")
     @DateTimeFormat(pattern="dd/MM/yyyy")
@@ -36,13 +35,15 @@ public class Conta {
     @Column(name ="mes")
     public String mes;
 
-    public int getId() {
-        return id;
-    }
+    @Column(name ="parcela")
+    public Long parcela;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    @Column(name ="valorParcela")
+    public BigDecimal valorParcela;
+
+    public int getId() { return id; }
+
+    public void setId(int id) { this.id = id; }
 
     public String getDescricao() {
         return descricao;
@@ -52,37 +53,45 @@ public class Conta {
         this.descricao = descricao;
     }
 
-    public Long getValor() {
+    public BigDecimal getValor() {
         return valor;
     }
 
-    public void setValor(Long valor) { this.valor = valor; }
+    public void setValor(BigDecimal valor) { this.valor = valor; }
 
     public String getTipoConta() { return tipoConta; }
 
     public void setTipoConta(String tipoConta) { this.tipoConta = tipoConta; }
 
-    public Long getQtdParcela() {
-        return qtdParcela;
-    }
+    public BigDecimal getQtdParcela() { return qtdParcela; }
 
-    public void setQtdParcela(Long qtdParcela) {
-        this.qtdParcela = qtdParcela;
-    }
+    public void setQtdParcela(BigDecimal qtdParcela) { this.qtdParcela = qtdParcela; }
 
-    public Date getDataInicio() { return dataInicio; }
+    public Timestamp getDataInicio() { return dataInicio; }
 
-    public void setDataInicio(Date dataInicio) { this.dataInicio = dataInicio; }
+    public void setDataInicio(Timestamp dataInicio) { this.dataInicio = dataInicio; }
 
     public Date getDataFim() { return dataFim;  }
 
     public void setDataFim(Date dataFim) { this.dataFim = dataFim; }
 
-    public String getMes() {
-        return mes;
+    public String getMes() { return mes; }
+
+    public void setMes(String mes) { this.mes = mes; }
+
+    public Long getParcela() {
+        return parcela;
     }
 
-    public void setMes(String mes) {
-        this.mes = mes;
+    public void setParcela(Long parcela) {
+        this.parcela = parcela;
+    }
+
+    public BigDecimal getValorParcela() {
+        return valorParcela;
+    }
+
+    public void setValorParcela(BigDecimal valorParcela) {
+        this.valorParcela = valorParcela;
     }
 }
