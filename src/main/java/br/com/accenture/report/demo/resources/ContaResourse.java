@@ -2,6 +2,12 @@ package br.com.accenture.report.demo.resources;
 
 import br.com.accenture.report.demo.entity.Conta;
 import br.com.accenture.report.demo.repository.ContaRepository;
+import br.com.accenture.report.demo.service.ContaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +22,9 @@ import java.util.Optional;
 @RequestMapping(path="/contas")
 public class ContaResourse {
     private ContaRepository contaRepository;
+
+    @Autowired
+    ContaService contaService;
 
     public ContaResourse(ContaRepository contaRepository) {
         super();
@@ -51,12 +60,12 @@ public class ContaResourse {
         return new ResponseEntity<>(contas, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/relatorioMensal")
-    public ResponseEntity<List<Conta>> geraRelatorio() {
-        List<Conta> contas = new ArrayList<>();
-        contas = contaRepository.findAll();
-        return new ResponseEntity<>(contas, HttpStatus.OK);
-    }
+//    @GetMapping(path = "/relatorioMensal")
+//    public ResponseEntity<List<Conta>> geraRelatorio() {
+//        List<Conta> contas = new ArrayList<>();
+//        contas = contaRepository.findAll();
+//        return new ResponseEntity<>(contas, HttpStatus.OK);
+//    }
 
     @GetMapping(path ="/{id}")
     public ResponseEntity<Optional<Conta>> getById(@PathVariable Integer id) {
@@ -68,6 +77,25 @@ public class ContaResourse {
             return new ResponseEntity<Optional<Conta>>(HttpStatus.NOT_FOUND);
         }
      }
+
+    @GetMapping("/search")
+    public Page<Conta> search(
+            @RequestParam("dataSearch") String dataSearch,
+            @RequestParam(
+                    value = "page",
+                    required = false,
+                    defaultValue = "0") int page,
+            @RequestParam(
+                    value = "size",
+                    required = false,
+                    defaultValue = "10") int size) {
+        return contaService.search(dataSearch, page, size);
+    }
+
+    @GetMapping(path = "/buscaRel")
+    public Page<Conta> getRelatorio() {
+        return contaService.findAll();
+    }
 
     @DeleteMapping(path ="/{id}")
     public ResponseEntity<Optional<Conta>> deleteById(@PathVariable Integer id) {
